@@ -3,20 +3,24 @@ const cors = require('cors');
 require('dotenv').config();
 
 const pool = require('./db/db');
+const { authenticate } = require('./middleware/auth.middleware');
 
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
-// Test route
+app.use('/api/schedules', require('./routes/schedules'));
+app.use('/api/consultations', require('./routes/consultations'));
+
+// Health check routes
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'ConsultSiya API is running!' });
 });
 
-// Database test route
 app.get('/db-health', async (req, res) => {
   try {
     const result = await pool.query('SELECT NOW()');
@@ -24,6 +28,11 @@ app.get('/db-health', async (req, res) => {
   } catch (err) {
     res.status(500).json({ status: 'error', message: err.message });
   }
+});
+
+// Protected test route
+app.get('/api/protected', authenticate, (req, res) => {
+  res.json({ message: `Hello ${req.user.role}!`, user: req.user });
 });
 
 // Start server
