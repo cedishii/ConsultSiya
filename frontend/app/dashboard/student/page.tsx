@@ -189,12 +189,18 @@ export default function StudentDashboard() {
       const res = await fetch(`${API_URL}/api/forms/advising-slip/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) { alert('Failed to generate advising slip.'); return; }
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        alert(data?.error || `Failed to generate advising slip (${res.status}).`);
+        return;
+      }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = `advising-slip-${id}.pdf`; a.click();
+      a.href = url; a.download = `FM-AS-11-02-Course-Program-Advising-Slip.docx`; a.click();
       URL.revokeObjectURL(url);
+    } catch (err) {
+      alert('Could not reach the server. Check your connection.');
     } finally {
       setDownloadingSlip(null);
     }

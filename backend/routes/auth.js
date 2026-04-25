@@ -8,39 +8,39 @@ const pool = require('../db/db');
 router.post('/register', async (req, res) => {
   const { email, password, role, full_name, student_number, program, year_level, department } = req.body;
 
+  const client = await pool.connect();
   try {
-    // Hash the password
     const password_hash = await bcrypt.hash(password, 10);
 
-    // Create user
-    const userResult = await pool.query(
-      `INSERT INTO users (email, password_hash, role) 
-       VALUES ($1, $2, $3) RETURNING id`,
+    await client.query('BEGIN');
+
+    const userResult = await client.query(
+      `INSERT INTO users (email, password_hash, role) VALUES ($1, $2, $3) RETURNING id`,
       [email, password_hash, role]
     );
-
     const userId = userResult.rows[0].id;
 
-    // Create profile based on role
     if (role === 'student') {
-      await pool.query(
-        `INSERT INTO students (user_id, full_name, student_number, program, year_level) 
+      await client.query(
+        `INSERT INTO students (user_id, full_name, student_number, program, year_level)
          VALUES ($1, $2, $3, $4, $5)`,
         [userId, full_name, student_number, program, year_level]
       );
     } else if (role === 'professor') {
-      await pool.query(
-        `INSERT INTO professors (user_id, full_name, department) 
-         VALUES ($1, $2, $3)`,
+      await client.query(
+        `INSERT INTO professors (user_id, full_name, department) VALUES ($1, $2, $3)`,
         [userId, full_name, department]
       );
     }
 
+    await client.query('COMMIT');
     res.status(201).json({ message: 'User registered successfully' });
-
   } catch (err) {
+    await client.query('ROLLBACK');
     console.error(err);
     res.status(500).json({ error: err.message });
+  } finally {
+    client.release();
   }
 });
 

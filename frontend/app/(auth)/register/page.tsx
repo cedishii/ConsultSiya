@@ -21,7 +21,13 @@ const PROGRAMS = [
   'Other',
 ];
 
-const YEAR_LEVELS = ['1st Year', '2nd Year', '3rd Year', '4th Year', '5th Year'];
+const YEAR_LEVELS = [
+  { label: '1st Year', value: '1' },
+  { label: '2nd Year', value: '2' },
+  { label: '3rd Year', value: '3' },
+  { label: '4th Year', value: '4' },
+  { label: '5th Year', value: '5' },
+];
 
 const DEPARTMENTS = [
   'Computer Science',
@@ -189,7 +195,7 @@ export default function RegisterPage() {
                 <Label className={labelCls}>Year Level</Label>
                 <select value={form.year_level} onChange={set('year_level')} className={selectCls}>
                   <option value="">Select year…</option>
-                  {YEAR_LEVELS.map(y => <option key={y} value={y}>{y}</option>)}
+                  {YEAR_LEVELS.map(y => <option key={y.value} value={y.value}>{y.label}</option>)}
                 </select>
               </div>
             </>

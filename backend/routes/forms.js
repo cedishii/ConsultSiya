@@ -202,41 +202,14 @@ function drawSlip(doc, startY, data) {
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 
-// Generate pre-filled advising slip PDF
+// Download the static advising slip template
 router.get('/advising-slip/:id', authenticate, async (req, res) => {
   try {
-    const { id } = req.params;
-
-    const result = await pool.query(
-      `SELECT c.id, c.date, c.nature_of_advising, c.nature_of_advising_specify, c.student_id,
-              s.full_name AS student_name, s.student_number, s.program, s.year_level,
-              p.full_name AS professor_name
-       FROM consultations c
-       JOIN students s ON c.student_id = s.id
-       JOIN professors p ON c.professor_id = p.id
-       WHERE c.id = $1`,
-      [id]
-    );
-
-    if (result.rows.length === 0) return res.status(404).json({ error: 'Consultation not found.' });
-    const data = result.rows[0];
-
-    if (req.user.role === 'student') {
-      const student = await pool.query('SELECT id FROM students WHERE user_id = $1', [req.user.id]);
-      if (!student.rows[0] || student.rows[0].id !== data.student_id) {
-        return res.status(403).json({ error: 'Access denied.' });
-      }
+    const slipPath = path.join(__dirname, '../static/advising-slip.docx');
+    if (!fs.existsSync(slipPath)) {
+      return res.status(404).json({ error: 'Advising slip file not found on server.' });
     }
-
-    const doc = new PDFDocument({ margin: 0, size: 'A4', layout: 'portrait' });
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=advising-slip-${data.student_number || id}.pdf`);
-    doc.pipe(res);
-
-    drawSlip(doc, 25, data);
-    drawSlip(doc, 415, data);
-
-    doc.end();
+    res.download(slipPath, 'FM-AS-11-02-Course-Program-Advising-Slip.docx');
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });

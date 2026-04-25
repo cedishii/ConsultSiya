@@ -39,7 +39,9 @@ CREATE TABLE IF NOT EXISTS consultations (
   date DATE NOT NULL,
   status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled')),
   nature_of_advising TEXT,
+  nature_of_advising_specify TEXT,
   mode VARCHAR(10) CHECK (mode IN ('F2F', 'OL')),
+  uploaded_form_path TEXT,
   created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -48,6 +50,7 @@ CREATE TABLE IF NOT EXISTS consultation_details (
   consultation_id INTEGER REFERENCES consultations(id) ON DELETE CASCADE,
   action_taken TEXT,
   referral TEXT,
+  referral_specify TEXT,
   remarks TEXT,
   completed_at TIMESTAMP DEFAULT NOW()
 );

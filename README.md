@@ -22,7 +22,7 @@ Students book consultation slots with professors. Professors manage schedules an
 ```
 ConsultSiya/
 ├── backend/          # Express API server
-│   ├── db/           # schema.sql + pg pool
+│   ├── db/           # schema.sql + pg po`ol
 │   ├── middleware/   # JWT auth middleware
 │   ├── routes/       # auth, schedules, consultations, reports
 │   ├── .env          # local env (not committed)
@@ -43,21 +43,51 @@ ConsultSiya/
 
 ## Getting Started
 
-### Prerequisites
+### Option A — Docker (recommended, one command)
 
-- Node.js 18+
-- Docker (for PostgreSQL) or a local PostgreSQL 16 instance
-
-### 1. Database
+**Prerequisites:** [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
 ```bash
-cd backend
-docker compose up -d      # starts PostgreSQL on port 5432
+docker compose up --build
 ```
 
-The schema is applied automatically on first run (see `db/schema.sql`).
+| Service  | URL                        |
+|----------|----------------------------|
+| Frontend | http://localhost:3000      |
+| Backend  | http://localhost:4000      |
+| Database | localhost:5432             |
 
-### 2. Backend
+The database schema is applied automatically on first run.
+
+> **Before going to production** change `JWT_SECRET` in `docker-compose.yml` to a long random string.
+
+To stop and remove containers:
+
+```bash
+docker compose down
+```
+
+To also wipe the database volume:
+
+```bash
+docker compose down -v
+```
+
+---
+
+### Option B — Run locally (no Docker)
+
+**Prerequisites:** Node.js 18+, PostgreSQL 16
+
+#### 1. Database
+
+Create a PostgreSQL database named `consultsiya` and run:
+
+```bash
+psql -U <user> -d consultsiya -f backend/db/schema.sql
+```
+
+#### 2. Backend
 
 ```bash
 cd backend
@@ -66,7 +96,7 @@ npm install
 npm run dev               # starts on http://localhost:4000
 ```
 
-**Required env vars** (see `.env.example`):
+**Required env vars:**
 
 | Variable       | Description                        |
 |----------------|------------------------------------|
@@ -74,7 +104,7 @@ npm run dev               # starts on http://localhost:4000
 | `DATABASE_URL` | PostgreSQL connection string       |
 | `JWT_SECRET`   | Secret key for signing JWTs        |
 
-### 3. Frontend
+#### 3. Frontend
 
 ```bash
 cd frontend
@@ -96,18 +126,15 @@ NEXT_PUBLIC_API_URL=http://localhost:4000
 - Browse available consultation slots
 - Book a slot (inline form — nature of advising, mode, date)
 - View and cancel their own consultations
-- **History** — past (completed/cancelled) consultations grouped by quarter, showing date, purpose, adviser, and action taken
 
 ### Professor
-- **My Consultations** — confirm or mark consultations as completed (inline form with action taken, referral, remarks; validation errors shown inline)
+- **My Consultations** — confirm or mark consultations as completed (with action taken, referral, remarks)
 - **Manage Schedules** — create and delete availability slots
 - **Export Report** — download advising report as PDF or Excel
-- **History** — past advising sessions grouped by quarter, showing date, student, purpose, and action taken
 
 ### Admin
 - View all consultations across the system
 - Stats: Total / Pending / Confirmed / Completed / Cancelled
-- **History** — all past consultations grouped by quarter, showing date, student, adviser, purpose, and action taken
 
 ---
 

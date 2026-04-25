@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e ' *)",
+      "Bash(curl -s http://localhost:4001/api/forms/advising-slip/1)",
+      "Bash(curl -s http://localhost:4001/health)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 4000, 4001 -State Listen -ErrorAction SilentlyContinue | ForEach-Object { $p = Get-Process -Id $_.OwningProcess -ErrorAction SilentlyContinue; [PSCustomObject]@{Port=$_.LocalPort; PID=$_.OwningProcess; Name=$p.Name; Path=$p.Path} })",
+      "PowerShell(netstat -ano | Select-String \":4000|:4001\" | Where-Object { $_ -match \"LISTENING\" })",
+      "PowerShell(@\\(1228, 6548, 17368\\) | ForEach-Object { $p = Get-Process -Id $_ -ErrorAction SilentlyContinue; \"$_ => $\\($p.Name\\) | $\\($p.Path\\)\" })",
+      "Read(//mnt/c/Users/cuent/OneDrive/Documents/GitHub/**)"
+    ]
+  }
+}
