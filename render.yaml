@@ -1,0 +1,46 @@
+# Render Blueprint — deploys the Express backend on Render's free tier.
+# In Render: New → Blueprint → pick this GitHub repo. Render reads this file.
+# Values marked `sync: false` are secrets: Render asks you to paste them in
+# the dashboard during setup. They are never stored in this repo.
+services:
+  - type: web
+    name: consultsiya-backend
+    runtime: node
+    plan: free
+    region: singapore          # closest Render region to the Philippines
+    rootDir: backend
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      # Postgres connection string from Neon / Supabase (must allow SSL)
+      - key: DATABASE_URL
+        sync: false
+      # Long random string; generate a fresh one, don't reuse the example value
+      - key: JWT_SECRET
+        generateValue: true
+      # Your Vercel frontend URL, e.g. https://consultsiya.vercel.app
+      - key: FRONTEND_URL
+        sync: false
+      # Public URL of this backend, e.g. https://consultsiya-backend.onrender.com
+      - key: BASE_URL
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        sync: false

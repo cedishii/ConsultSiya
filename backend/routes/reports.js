@@ -528,7 +528,9 @@ router.get('/pdf', authenticate, authorize('professor', 'admin'), async (req, re
 
     browser = await puppeteer.launch({
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      // --disable-dev-shm-usage / --disable-gpu keep Chrome within small
+      // container memory limits (e.g. Render's free 512 MB instance).
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
     });
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'networkidle0' });
