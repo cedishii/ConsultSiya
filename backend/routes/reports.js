@@ -133,13 +133,13 @@ function getTermForDate(date) {
   // Mapúa QTR boundaries:
   // 1st QTR: Aug–Oct   AY year/(year+1)
   // 2nd QTR: Nov–Jan   AY year/(year+1) or (year-1)/year
-  // 3rd QTR: Feb–Apr   AY (year-1)/year
-  // 4th QTR: May–Jul   AY (year-1)/year
+  // 3rd QTR: Feb–Jun   AY (year-1)/year
+  // 4th QTR: Jul       AY (year-1)/year
   if (month >= 8 && month <= 10) return { qtr: '1st', ay: `${year}-${year + 1}` };
   if (month >= 11)               return { qtr: '2nd', ay: `${year}-${year + 1}` };
   if (month === 1)               return { qtr: '2nd', ay: `${year - 1}-${year}` };
-  if (month >= 2 && month <= 4)  return { qtr: '3rd', ay: `${year - 1}-${year}` };
-  /* month 5–7 */                return { qtr: '4th', ay: `${year - 1}-${year}` };
+  if (month >= 2 && month <= 6)  return { qtr: '3rd', ay: `${year - 1}-${year}` };
+  /* month 7 */                  return { qtr: '4th', ay: `${year - 1}-${year}` };
 }
 
 function ordinal(n) {
